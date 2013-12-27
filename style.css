@@ -1,0 +1,28 @@
+#input-string {
+	clear: both;
+	display: block;
+	outline: none;
+	font-family: Verdana;
+}
+
+#run-btn {
+	width: 100px;
+	padding: 10px;
+	text-align: center;
+	background: #333;
+	color: #FFF;
+	border: 1px solid #000;
+	border-radius: 5px;
+	box-shadow: 1px 1px 2px #999;
+	outline: none;
+}
+
+#pattern-text {
+	clear: both;
+	display: block;
+	width: 230px;
+}
+
+#run-btn:hover {
+	background: #666;
+}
