@@ -36,9 +36,14 @@ var SA = SA || {},
 			if(this.pattern[lengthP-index] === this.inputString[k-index]) {
 				if(index === lengthP) {
 					this.isMatch = true;
+					index = 0;
+					k += lengthP-index+1;
+					if(k >= lengthS) {
+						isEnd = true;
+					}							
+				} else {
+					index++;
 				}
-
-				index++;
 			} else {
 				if(this.shift[this.inputString[k-index]] &&
 					this.shift[this.inputString[k-index]][lengthP-index] >= 0) {
@@ -118,7 +123,7 @@ var SA = SA || {},
 			patternLength = this.pattern.length;
 
 		while(i < inpLength-1 /*&& j < patternLength-1*/) {
-			if(j === patternLength-1) {
+			if(j >= patternLength-1) {
 				this.isMatch = true;
 				j = -1;
 			}
@@ -144,7 +149,7 @@ var SA = SA || {},
 			j = -1,
 			length = this.pattern.length-2;
 
-		this.nextArray[0] = 0;
+		this.nextArray[0] = -1;
 
 		while(i < length) {
 			if(this.pattern[i+1] === this.pattern[j+1]) {
@@ -263,29 +268,24 @@ window.onload = function() {
 		/*
 		QS.init(input, pattern);
 		QS.run();*/
+		BM.init(input, pattern);
+		KMP.init(input, pattern);
 		
-		/*suite.add("KMP#run", function() {
+		suite.add("KMP#run", function() {
+			KMP.run();
 		})
-		.add("QS#run", function () {
+		.add("BM#run", function () {
+			BM.run();
 		})
 		.on("complete", function() {
 			console.log(this);
 			console.log("Fastest is " + this.filter("fastest").pluck("name"));
 		})
-		.run({"async": true});*/
+		.run({"async": true});
 
-		BM.init(input, pattern);
-		console.log("itt0")
-		BM.run();
-		console.log("itt")
-		KMP.init(input, pattern);
-		console.log("itt2")
-		KMP.run();
-		console.log("itt3")
 
-		console.log(BM.isMatch);
-		console.log(KMP.isMatch);
+		/*console.log(KMP.isMatch);
+		console.log(BM.isMatch);*/
 
-		console.log("END");
 	}, false);
 };
