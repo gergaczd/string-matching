@@ -1,5 +1,9 @@
 var SA = SA || {},
-	suite = new Benchmark.Suite();
+	suite = new Benchmark.Suite("StringPattern", {
+		maxTime: 5,
+		minSamples: 100,
+		minTime: 1
+	});
 
 (function() {
 	"use strict";
@@ -8,6 +12,8 @@ var SA = SA || {},
 		this.inputString = "";
 		this.pattern = "";
 		this.shift = {};
+		this.tableL = [];
+		this.tableH = [];
 		this.isMatch = false;
 	};
 
@@ -22,7 +28,10 @@ var SA = SA || {},
 
 	p.preprocess = function () {
 		this.shift = {};
+		this.tableL = [];
+		this.tableH = [];
 		this._initBadCharacterRule();
+		this._initGoodSuffixRule();
 	};
 
 	p.run = function() {
@@ -89,6 +98,10 @@ var SA = SA || {},
 				}
 			}
 		}
+	};
+
+	p._initGoodSuffixRule = function() {
+		
 	};
 }());
 
@@ -176,84 +189,195 @@ var SA = SA || {},
 	};
 }());
 
-(function(){
+(function() {
 	"use strict";
 
-	SA.QuickSearch = function() {
-		this.inputString = undefined;
-		this.pattern = undefined;
+	SA.BoyerMooreHorspoolAlgorithm = function() {
+		this.inputString = "";
+		this.pattern = "";
 		this.shift = {};
-
-		this.startTime = undefined;
-		this.endTime = undefined;
+		this.isMatch = false;
 	};
 
-	var p = SA.QuickSearch.prototype;
+	var p = SA.BoyerMooreHorspoolAlgorithm.prototype;
 
 	p.init = function(text, pattern) {
-		this.inputString = "#" + text;
-		this.pattern = "#" + pattern;
+		this.inputString = text;
+		this.pattern = pattern;
+		this.isMatch = false;
 		this.preprocess();
 	};
 
-	p.preprocess = function() {
+	p.preprocess = function () {
 		this.shift = {};
 		this._initBadCharacterRule();
 	};
 
 	p.run = function() {
-		this.startTime = (new Date()).getTime();
-		var n = this.inputString.length-1,
-			m = this.pattern.length-1,
-			k = 0, //??
-			j = 1;
+		var lengthP = this.pattern.length-1,
+			lengthS = this.inputString.length,
+			k = this.pattern.length-1,
+			index = 0,
+			isEnd = false;
 
-		while(k <= n-m && j <= m) {
-			if(this.inputString[k+j] === this.pattern[j]) {
-				j++;
-			} else {
-				if(k === n-m) {
-					k++;
+		while(!isEnd) {
+			if(this.pattern[lengthP-index] === this.inputString[k-index]) {
+				if(index === lengthP) {
+					this.isMatch = true;
+					index = 0;
+					k += lengthP-index+1;
+					if(k >= lengthS) {
+						isEnd = true;
+					}							
 				} else {
-					k += this.shift[this.inputString[k+m+1]];
+					index++;
 				}
-			}
-		}
-		this.endTime = (new Date()).getTime();
+			} else {
+				if(this.shift[this.inputString[k-index]] &&
+					this.shift[this.inputString[k-index]][lengthP-index] >= 0) {
 
-		if(k <= n-m) {
-			console.log("GOTCHA QS");
-		} else {
-			console.log("FAILED QS");
+					k += ((lengthP-index) - this.shift[this.inputString[k-index]][lengthP-index]);
+				} else {
+					//TODO: shift all
+					k += lengthP-index+1;
+				}
+				if(k >= lengthS) {
+					isEnd = true;
+				}
+				index = 0;
+			}
 		}
 	};
 
 	p._initBadCharacterRule = function() {
-		var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz .,-:?!".split(""),
-			length = this.pattern.length;
+		var length = this.pattern.length,
+			isLess, j, i, _char;
 
-		for (var i = 0; i < alphabet.length; i++) {
-			this.shift[alphabet[i]] = length;
-		}
-
-		for (var j = 1; j < length; j++) {
-			this.shift[this.pattern[j]] = length-j+1;//??
+		for (j = length-1; j >= 0; j--) {
+			_char  = this.pattern[j];
+			if(this.shift[_char] === undefined) {
+				this.shift[_char] = [];
+				for(i = 0; i < length; i++) {
+					if(i <= j) {
+						this.shift[_char][i] = -1;
+					} else {
+						this.shift[_char][i] = j;
+					}
+				}
+			} else {
+				i = j+1;
+				isLess = false;
+				while(i < length && !isLess) {
+					if(j > this.shift[_char][i]) {
+						this.shift[_char][i] = j;
+						i++;
+					} else {
+						isLess = true;
+					}
+				}
+			}
 		}
 	};
+}());
 
-	p.time = function () {
-		if(this.startTime !== undefined && this.endTime !== undefined) {
-			return (this.endTime - this.startTime);
-		} else {
-			return false;
-		}
+(function(){
+	"use strict";
+
+	SA.BruteForce = function() {
+		this.inputString = "";
+		this.pattern = "";
+		this.isMatch = false;
+	};
+
+	var p = SA.BruteForce.prototype;
+
+	p.init = function(text, pattern) {
+		this.inputString = text;
+		this.pattern = pattern;
+		this.isMatch = false;
+	};
+
+	p.run = function() {
+		var lengthP = this.pattern.length,
+			lengthS = this.inputString.length - this.pattern.length,
+			k = 0,
+			i = 0;
+
+		while(k <= lengthS) {
+			while(this.pattern[i] === this.inputString[k+i]) {
+				i++;
+			}
+
+			if(i === lengthP) {
+				this.isMatch = true;
+				k += lengthP;
+			} else {
+				k++;
+			}
+			i = 0;
+		}		
 	};	
 }());
 
 var KMP = new SA.KMPAlgorithm(),
 	BM = new SA.BoyerMooreAlgorithm(),
-	QS = new SA.QuickSearch();
+	BMH = new SA.BoyerMooreHorspoolAlgorithm(),
+	BF = new SA.BruteForce();
 
+var charData = [],
+	testIndex = 0,
+	mychart,
+	maxValue = 0;
+
+var chartYUI;
+YUI().use('charts-legend', function(Y) {
+	chartYUI = Y;
+	suite.add("KMP#run", function() {
+		KMP.run();
+	})
+	.add("BM#run", function () {
+		BM.run();
+	})
+	/*.add("BF#run", function() {
+		BF.run();
+	})*/
+	.add("BMH#run", function() {
+		BMH.run();
+	})
+	.on("complete", function() {
+		console.log(this);
+		console.log("Fastest is " + this.filter("fastest").pluck("name"));
+
+		var newResult = {category: "testCase#"+testIndex};
+		testIndex++;
+
+		this.forEach(function(testCase) {
+			newResult[testCase.name] = testCase.stats.mean;
+			if(testCase.stats.mean > maxValue) {
+				maxValue = testCase.stats.mean;
+			}
+		});
+
+		charData.push(newResult);
+
+		mychart && mychart.destroy();
+		mychart = new Y.Chart({
+            legend: {
+                position: "right",
+                width: 300,
+                height: 300,
+                styles: {
+                    hAlign: "center",
+                    hSpacing: 4
+                }
+            },			
+		    dataProvider: charData,
+		    render: "#chart",
+		    type: "column",
+		    axes: {values: {maximum: maxValue}}
+		});
+	});
+});
 window.onload = function() {
 	"use strict";
 
@@ -265,23 +389,12 @@ window.onload = function() {
 		var input = inputString.value,
 			pattern = patternString.value;
 		
-		/*
-		QS.init(input, pattern);
-		QS.run();*/
 		BM.init(input, pattern);
 		KMP.init(input, pattern);
+		BF.init(input,pattern);
+		BMH.init(input,pattern);
 		
-		suite.add("KMP#run", function() {
-			KMP.run();
-		})
-		.add("BM#run", function () {
-			BM.run();
-		})
-		.on("complete", function() {
-			console.log(this);
-			console.log("Fastest is " + this.filter("fastest").pluck("name"));
-		})
-		.run({"async": true});
+		suite.run({"async": true});
 
 
 		/*console.log(KMP.isMatch);
