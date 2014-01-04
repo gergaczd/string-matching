@@ -1,3 +1,21 @@
+body {
+	font-family: Arial;
+	font-size: 16px;
+}
+
+#loader {
+	display: none;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	opacity: 0.9;
+	background: url("ajax-loader.gif") #DDD;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
 #input-string {
 	clear: both;
 	display: block;
@@ -5,8 +23,8 @@
 	font-family: Verdana;
 }
 
-#run-btn {
-	width: 100px;
+button {
+	width: 140px;
 	padding: 10px;
 	text-align: center;
 	background: #333;
@@ -23,12 +41,119 @@
 	width: 230px;
 }
 
-#run-btn:hover {
+button:hover {
 	background: #666;
 }
 
-#chart {
-	width: 800px;
-	height: 400px;
+#chart, #chart-compare {
+	width: 550px;
+	height: 380px;
+	padding: 10px;
+}
+
+h3 {
+	margin: 0;
+	padding: 0;
+	margin-left: 10px;
+}
+
+.chart-box {
+	width: 600px;
+	height: 500px;
+	margin: 10px 10px 50px 10px;
+	border: 1px solid #333;
+	border-radius: 3px;
+	box-shadow: 1px 1px 2px #999;
+	background: #DEDEDE;
+	float: left;
+}
+
+#charts {
+	clear: both;
+	width: 1245px;
+}
+
+#all-match, #first-match {
+	display: none;
+}
+
+#matching-numbers {
+	display: block;
+	clear: both;
+	margin: 20px 0;
+}
+
+#all-match-label, #first-match-label {
+	background: #DDD;
+	padding: 5px 10px;
+	border: 1px solid #333;
+	box-shadow: 1px 1px 2px #666;
+	opacity: 0.6;
+}
+
+#all-match-label {
+	border-radius: 5px 0px 0px 5px;
+}
+
+#first-match-label {
+	border-radius: 0px 5px 5px 0px;
+}
+
+#all-match-label:hover, #first-match-label:hover {
+	opacity: 1;
+}
+
+#all-match-label.active, #first-match-label.active {
+	opacity: 1;
+	background: #339933;
+	color: #FFF;
+}
+
+#control-panel, #statistic-table-panel {
+	float: left;
+	background: #DDD;
 	margin: 10px;
+	padding: 20px;
+	border: 1px solid #333;
+	box-shadow: 1px 1px 2px #666;
+	border-radius: 3px;	
+	height: 350px;
+}
+
+#control-panel {
+	position: relative;
+	width: 300px;
+}
+
+#statistic-table-panel {
+	width: 820px;
+	overflow: auto;
+}
+
+#statistic-table {
+	border-collapse: collapse;
+	border: 1px solid #333;
+	width: 100%;
+	background: #FFF;
+	overflow: auto;
+}
+
+#statistic-table td {
+	padding: 5px;
+}
+
+#statistic-table td.progress {
+	background: #FFFF00;
+}
+
+#statistic-table td.done {
+	background: #00e01d;
+}
+
+#statistic-table td.wait {
+	background: #fc5555;
+}
+
+.alg-head {
+	width: 60px;
 }
