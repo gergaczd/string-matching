@@ -5,6 +5,7 @@
 		<script type="text/javascript" src="benchmark.js"></script>
 		<script type="text/javascript" src="yui-min.js"></script>
 
+		<script type="text/javascript" src="algorithms/BaseAlgorithm.js"></script>
 		<script type="text/javascript" src="algorithms/BoyerMoore.js"></script>
 		<script type="text/javascript" src="algorithms/BoyerMooreHorspool.js"></script>
 		<script type="text/javascript" src="algorithms/KMP.js"></script>
@@ -16,6 +17,7 @@
 		<div id="control-panel">
 			<h3>Control panel</h3>
 			<input type="file" id="input-file" multiple>
+			<legend>Input text:</legend>
 			<textarea name="" id="input-string" cols="30" rows="10">
 				Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vel interdum nisi. Praesent tempor tristique sem, sed laoreet nisi elementum quis. Praesent eu arcu leo. Phasellus feugiat nisi nulla, nec sollicitudin eros molestie id. Donec vel ante eget est consequat pellentesque ut in nisi. Nam aliquet nibh porttitor, tristique arcu eget, congue erat. Aenean tristique vel neque eget ornare. Suspendisse a scelerisque neque. Vestibulum iaculis tellus vel lectus mattis posuere.
 
@@ -317,7 +319,8 @@
 
 				Cras ligula massa, pharetra eu ornare eget, cursus id magna. Vivamus consequat mauris eu nunc tincidunt ullamcorper. Praesent sit amet ligula vel elit consequat hendrerit. Fusce non molestie risus. Curabitur volutpat dui ac nisi adipiscing adipiscing. Ut magna ante, lobortis eu massa a, fermentum rhoncus sapien. Duis quam justo, tempus et varius quis, porttitor at arcu. Vestibulum adipiscing nec magna eget sollicitudin. Morbi et dapibus nibh. Lorem ipsum dolor sit amet, consectetur adipiscing elit.			
 			</textarea>
-			<input type="text" id="pattern-text">
+			<legend>Search pattern:</legend>
+			<input type="text" id="pattern-text" value="Lorem ipsum dolor sit amet">
 
 			<div id="matching-numbers">	
 				<label for="all-match" id="all-match-label" class="active">
@@ -341,7 +344,7 @@
 			<h3>Statistic table</h3>
 			<table id="statistic-table" border="1">
 			<tr>
-				<th>Id</th><th>Input</th><th>A/F</th><th># of text chars</th> <th># of pattern chars</th><th class="alg-head">BM</th><th class="alg-head">BMH</th><th class="alg-head">KMP</th>
+				<th>Id</th><th>Input</th><th>A/F</th><th># of text chars</th> <th># of pattern chars</th><th class="alg-head">KMP</th><th class="alg-head">BM</th><th class="alg-head">BMH</th><th>Matchings</th>
 			</tr>
 			</table>
 		</div>				

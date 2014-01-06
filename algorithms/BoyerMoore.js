@@ -4,24 +4,14 @@ var SA = SA || {};
 	"use strict";
 
 	SA.BoyerMooreAlgorithm = function() {
-		this.inputString = "";
-		this.pattern = "";
 		this.shift = {};
 		this.tableL = [];
 		this.tableH = [];
-		this.isMatch = false;
-		this.findAll = true;
 	};
 
+	SA.BoyerMooreAlgorithm.prototype = new SA.BaseAlgorithm();
+	SA.BoyerMooreAlgorithm.prototype.constructor = SA.BoyerMooreAlgorithm;
 	var p = SA.BoyerMooreAlgorithm.prototype;
-
-	p.init = function(text, pattern, isAll) {
-		this.inputString = text;
-		this.pattern = pattern;
-		this.isMatch = false;
-		this.findAll = !!isAll;		
-		this.preprocess();
-	};
 
 	p.preprocess = function () {
 		this.shift = {};
@@ -34,18 +24,21 @@ var SA = SA || {};
 	p.run = function() {
 		this.compareNumber = 0;
 		this.matchings = [];
+		this.isMatch = false;
+		this.lengthP = this.pattern.length;
 
-		var lengthP = this.pattern.length,
-			lengthS = this.inputString.length,
+		var	lengthS = this.inputString.length,
 			k = this.pattern.length,
 			index = 1,
 			isEnd = false;
 
+		var inpIndex = k - index,
+			patIndex = this.lengthP - index;
 		while(!isEnd) {
 			this.compareNumber++;
-			if(this.pattern[lengthP-index] === this.inputString[k-index]) {
-				if(index === lengthP) {
-					this.matchings.push(k-index);
+			if(this.pattern[patIndex] === this.inputString[inpIndex]) {
+				if(index === this.lengthP) {
+					this.matchings.push(inpIndex);
 					this.isMatch = true;
 					
 					if(!this.findAll) {
@@ -53,7 +46,7 @@ var SA = SA || {};
 						break;
 					}
 
-					k += this._getShift(this.inputString[k-index], lengthP-index, true);
+					k += this._getShift(this.inputString[inpIndex], patIndex, true);
 					index = 1;
 					if(k >= lengthS) {
 						isEnd = true;
@@ -62,13 +55,16 @@ var SA = SA || {};
 					index++;
 				}
 			} else {
-				k += this._getShift(this.inputString[k-index], lengthP-index, false);
+				k += this._getShift(this.inputString[inpIndex], patIndex, false);
 
 				if(k >= lengthS) {
 					isEnd = true;
 				}
 				index = 1;
 			}
+
+			inpIndex = k - index;
+			patIndex = this.lengthP - index;			
 		}
 	};
 
@@ -142,23 +138,18 @@ var SA = SA || {};
 
 	p._getShift = function(character, index, isMatch) {
 		var goodSuffix,
-			badCharacter,
-			length = this.pattern.length;
+			badCharacter;
 
-		if(!isMatch) {
-			if(this.tableL[index] === 0) {
-				goodSuffix = length - this.tableH[index];
-			} else {
-				goodSuffix = length - this.tableL[index];
-			}
+		if(isMatch || this.tableL[index] === 0) {
+			goodSuffix = this.lengthP - this.tableH[index];
 		} else {
-			goodSuffix = length - this.tableH[index];
+			goodSuffix = this.lengthP - this.tableL[index];
 		}
-
+		
 		if(this.shift[character] &&
 			this.shift[character][index] >= 0) {
 
-			badCharacter = (index - this.shift[character][index]);
+			badCharacter = index - this.shift[character][index];
 		} else {
 			badCharacter = index+1;
 		}

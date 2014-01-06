@@ -25,7 +25,7 @@ body {
 
 button {
 	width: 140px;
-	padding: 10px;
+	padding: 5px 10px;
 	text-align: center;
 	background: #333;
 	color: #FFF;
@@ -113,11 +113,11 @@ h3 {
 	float: left;
 	background: #DDD;
 	margin: 10px;
-	padding: 20px;
+	padding: 15px;
 	border: 1px solid #333;
 	box-shadow: 1px 1px 2px #666;
 	border-radius: 3px;	
-	height: 350px;
+	height: 360px;
 }
 
 #control-panel {
@@ -126,7 +126,7 @@ h3 {
 }
 
 #statistic-table-panel {
-	width: 820px;
+	width: 840px;
 	overflow: auto;
 }
 

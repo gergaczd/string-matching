@@ -4,22 +4,13 @@ var SA = SA || {};
 	"use strict";
 
 	SA.BoyerMooreHorspoolAlgorithm = function() {
-		this.inputString = "";
-		this.pattern = "";
 		this.shift = {};
-		this.isMatch = false;
-		this.findAll = true;
 	};
+
+	SA.BoyerMooreHorspoolAlgorithm.prototype = new SA.BaseAlgorithm();
+	SA.BoyerMooreHorspoolAlgorithm.prototype.constructor = SA.BoyerMooreHorspoolAlgorithm;
 
 	var p = SA.BoyerMooreHorspoolAlgorithm.prototype;
-
-	p.init = function(text, pattern, isAll) {
-		this.inputString = text;
-		this.pattern = pattern;
-		this.isMatch = false;
-		this.findAll = !!isAll;
-		this.preprocess();
-	};
 
 	p.preprocess = function () {
 		this.shift = {};
@@ -29,17 +20,21 @@ var SA = SA || {};
 	p.run = function() {
 		this.compareNumber = 0;
 		this.matchings = [];
-		var lengthP = this.pattern.length-1,
+		this.isMatch = false;
+
+		var lengthP = this.pattern.length,
 			lengthS = this.inputString.length,
-			k = this.pattern.length-1,
-			index = 0,
+			k = this.pattern.length,
+			index = 1,
 			isEnd = false;
 
+		var inpIndex = k - index,
+			patIndex = lengthP - index;
 		while(!isEnd) {
 			this.compareNumber++;
-			if(this.pattern[lengthP-index] === this.inputString[k-index]) {
+			if(this.pattern[patIndex] === this.inputString[inpIndex]) {
 				if(index === lengthP) {
-					this.matchings.push(k-index);
+					this.matchings.push(inpIndex);
 					this.isMatch = true;
 					
 					if(!this.findAll) {
@@ -47,8 +42,8 @@ var SA = SA || {};
 						break;
 					}
 
-					index = 0;
-					k += lengthP-index+1;
+					index = 1;
+					k += patIndex+1;
 					if(k >= lengthS) {
 						isEnd = true;
 					}							
@@ -56,19 +51,22 @@ var SA = SA || {};
 					index++;
 				}
 			} else {
-				if(this.shift[this.inputString[k-index]] &&
-					this.shift[this.inputString[k-index]][lengthP-index] >= 0) {
+				if(this.shift[this.inputString[inpIndex]] &&
+					this.shift[this.inputString[inpIndex]][patIndex] >= 0) {
 
-					k += ((lengthP-index) - this.shift[this.inputString[k-index]][lengthP-index]);
+					k += patIndex - this.shift[this.inputString[inpIndex]][patIndex];
 				} else {
 					//TODO: shift all
-					k += lengthP-index+1;
+					k += patIndex+1;
 				}
 				if(k >= lengthS) {
 					isEnd = true;
 				}
-				index = 0;
+				index = 1;
 			}
+
+			inpIndex = k - index;
+			patIndex = lengthP - index;
 		}
 	};
 

@@ -4,22 +4,12 @@ var SA = SA || {};
 	"use strict";
 
 	SA.KMPAlgorithm = function() {
-		this.inputString = undefined;
-		this.pattern = undefined;
 		this.nextArray = [];
-		this.isMatch = false;
-		this.findAll = true;
 	};
 
+	SA.KMPAlgorithm.prototype = new SA.BaseAlgorithm();
+	SA.KMPAlgorithm.prototype.constructor = SA.KMPAlgorithm;
 	var p = SA.KMPAlgorithm.prototype;
-
-	p.init = function(text, pattern, isAll) {
-		this.inputString = text;
-		this.pattern = pattern;
-		this.isMatch = false;
-		this.findAll = !!isAll;		
-		this.preprocess();
-	};
 
 	p.preprocess = function () {
 		this.nextArray = [];		
@@ -29,6 +19,7 @@ var SA = SA || {};
 	p.run = function() {
 		this.compareNumber = 0;
 		this.matchings = [];
+		this.isMatch = false;
 
 		var i = 0,
 			j = 0,

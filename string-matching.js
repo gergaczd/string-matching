@@ -7,32 +7,28 @@ var SA = SA || {},
 
 var KMP = new SA.KMPAlgorithm(),
 	BM = new SA.BoyerMooreAlgorithm(),
-	BMH = new SA.BoyerMooreHorspoolAlgorithm();
+	BMH = new SA.BoyerMooreHorspoolAlgorithm(),
 
-var charData = [],
+	charData = [],
 	testIndex = 0,
 	mychart,
 	compareChart,
 	maxValue = 0,
 	compareData = [], 
 	maxCompare = 0,
-	cellIndex = 5;
+	cellIndex = 5,
 
-var addRowToTable = function(id, inp, isall, numOfText, numOfPattern) {
-	var row = "<td>" + id + "</td><td>" + inp + "</td><td>" + (isall? "all": "first") + 
-		"</td><td>" + numOfText + "</td><td>" + numOfPattern + "</td><td class=\"wait\"></td><td class=\"wait\"></td><td class=\"wait\"></td>";
+	addRowToTable = function(id, inp, isall, numOfText, numOfPattern) {
+		var row = "<td>" + id + "</td><td>" + inp + "</td><td>" + (isall? "all": "first") + 
+			"</td><td>" + numOfText + "</td><td>" + numOfPattern + "</td><td class=\"progress\"></td><td class=\"wait\"></td><td class=\"wait\"></td><td></td>";
 
-	var rrow = SA.statisticTable.insertRow(SA.statisticTable.rows.length);
-	rrow.innerHTML = row;
-};
+		var rrow = SA.statisticTable.insertRow(SA.statisticTable.rows.length);
+		rrow.innerHTML = row;
+	},
 
-var showLoader = function() {
-	SA.loader.style.display = "block";
-},
+	showLoader = function() {SA.loader.style.display = "block";},
 
-hideLoader = function () {
-	SA.loader.style.display = "none";
-}
+	hideLoader = function () {SA.loader.style.display = "none";};
 
 YUI().use('charts-legend', function(Y) {
 	suite.add("KMP#run", function() {
@@ -45,7 +41,6 @@ YUI().use('charts-legend', function(Y) {
 		BMH.run();
 	})
 	.on("cycle",function() {
-		console.log(this);
 		if(cellIndex < 5 || cellIndex > 7) {
 			cellIndex = 5;
 		}
@@ -57,19 +52,10 @@ YUI().use('charts-legend', function(Y) {
 		} else {
 			cellIndex = 5;
 		}
+		SA.statisticTable.rows[testIndex+1].cells[8].innerHTML = KMP.matchings.length;
 	})
 	.on("complete", function() {
-		console.log(this);
-		console.log("Fastest is " + this.filter("fastest").pluck("name"));
-		console.log("Comparisons:");
-		console.log("KMP number: " + KMP.compareNumber);
-		console.log("BM number: " + BM.compareNumber);
-		console.log("BMH number: " + BMH.compareNumber);
 
-		console.log("Matchings:");
-		console.log(KMP.matchings);
-		console.log(BM.matchings);
-		console.log(BMH.matchings);
 
 		var newResult = {category: "test#"+testIndex},
 			newCompare = {category: "test#"+testIndex};
@@ -168,12 +154,14 @@ YUI().use('charts-legend', function(Y) {
 		});
 
 		SA.NextFile && SA.NextFile();
+		SA.EndRunning && SA.EndRunning();
 	});
 });
 
 window.onload = function() {
 	"use strict";
 
+	//Binding event listeners
 	var runBtn = document.getElementById("run-btn"),
 		patternString = document.getElementById("pattern-text"),
 		inputString = document.getElementById("input-string"),
@@ -186,6 +174,7 @@ window.onload = function() {
 		SA.statisticTable = document.getElementById("statistic-table");
 		SA.loader = document.getElementById("loader");
 
+	//All match - first match switcher
 	allMatch.addEventListener("change", function () {
 		if(this.checked) {
 			findAll = true;
@@ -212,6 +201,7 @@ window.onload = function() {
 		}		
 	}, false);
 
+	//Running with the files
 	runFileBtn.addEventListener("click", function(){
 		var files = inputFile.files,
 			fileIndex = 0,
@@ -225,8 +215,6 @@ window.onload = function() {
 				this.onload = null;
 
 				var input = event.target.result;
-
-				console.log("reader started");
 				
 				BM.init(input, pattern, findAll);
 				KMP.init(input, pattern, findAll);
@@ -242,12 +230,14 @@ window.onload = function() {
 			} else {
 				reader.onload = null;
 				hideLoader();
+				SA.NextFile = null;
 			}
 		};
 
 		SA.NextFile();
 	}, false);
 
+	//Running with the input text
 	runBtn.addEventListener("click", function() {
 		var input = inputString.value,
 			pattern = patternString.value;
@@ -256,8 +246,13 @@ window.onload = function() {
 		KMP.init(input, pattern, findAll);
 		BMH.init(input,pattern, findAll);
 		
-		addRowToTable(testIndex, "<input text>", findAll, input.length, pattern.length);	
+		addRowToTable(testIndex, "[input text]", findAll, input.length, pattern.length);	
 		showLoader();
 		suite.run({"async": true});
+
+		SA.EndRunning = function() {
+			hideLoader();
+			SA.EndRunning = null;
+		};
 	}, false);
 };
